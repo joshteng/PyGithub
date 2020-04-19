@@ -1151,9 +1151,9 @@ class Repository(github.GithubObject.CompletableGithubObject):
         assert isinstance(title, str), title
         assert body is github.GithubObject.NotSet or isinstance(body, str), body
         assert (
-            assignee is github.GithubObject.NotSet
-            or isinstance(assignee, github.NamedUser.NamedUser)
-            or isinstance(assignee, str)
+            assignee is github.GithubObject.NotSet or
+            isinstance(assignee, github.NamedUser.NamedUser) or
+            isinstance(assignee, str)
         ), assignee
         assert assignees is github.GithubObject.NotSet or all(
             isinstance(element, github.NamedUser.NamedUser) or isinstance(element, str)
@@ -1887,9 +1887,9 @@ class Repository(github.GithubObject.CompletableGithubObject):
             "GET", self.url + "/traffic/views", parameters=url_parameters
         )
         if (
-            (isinstance(data, dict))
-            and ("views" in data)
-            and (isinstance(data["views"], list))
+            (isinstance(data, dict)) and
+            ("views" in data) and
+            (isinstance(data["views"], list))
         ):
             data["views"] = [
                 github.View.View(self._requester, headers, item, completed=True)
@@ -1913,9 +1913,9 @@ class Repository(github.GithubObject.CompletableGithubObject):
             "GET", self.url + "/traffic/clones", parameters=url_parameters
         )
         if (
-            (isinstance(data, dict))
-            and ("clones" in data)
-            and (isinstance(data["clones"], list))
+            (isinstance(data, dict)) and
+            ("clones" in data) and
+            (isinstance(data["clones"], list))
         ):
             data["clones"] = [
                 github.Clones.Clones(self._requester, headers, item, completed=True)
@@ -2210,6 +2210,22 @@ class Repository(github.GithubObject.CompletableGithubObject):
         )
         return Repository(self._requester, headers, data, completed=True)
 
+    def transfer(self, new_owner, team_ids=[]):
+        """
+        :calls: `POST /repos/:owner/:repo/transfer <https://developer.github.com/v3/repos/#transfer-a-repository>`_
+        :param new_owner: string or "none" or "*". Required.
+        :param team_ids: list. Optional. Works only under organizations.
+        :rtype: :class:`github.Repository.Repository`
+        """
+        assert new_owner is not None
+        assert isinstance(new_owner, str), new_owner
+        assert all(isinstance(element, int) for element in team_ids), team_ids
+        post_parameters = {"new_owner": new_owner, 'team_ids': team_ids}
+        headers, data = self._requester.requestJsonAndCheck(
+            "POST", self.url + "/transfer", input=post_parameters,
+        )
+        return Repository(self._requester, headers, data, completed=True)
+
     def get_git_blob(self, sha):
         """
         :calls: `GET /repos/:owner/:repo/git/blobs/:sha <http://developer.github.com/v3/git/blobs>`_
@@ -2351,16 +2367,16 @@ class Repository(github.GithubObject.CompletableGithubObject):
         :rtype: :class:`github.PaginatedList.PaginatedList` of :class:`github.Issue.Issue`
         """
         assert (
-            milestone is github.GithubObject.NotSet
-            or milestone == "*"
-            or milestone == "none"
-            or isinstance(milestone, github.Milestone.Milestone)
+            milestone is github.GithubObject.NotSet or
+            milestone == "*" or
+            milestone == "none" or
+            isinstance(milestone, github.Milestone.Milestone)
         ), milestone
         assert state is github.GithubObject.NotSet or isinstance(state, str), state
         assert (
-            assignee is github.GithubObject.NotSet
-            or isinstance(assignee, github.NamedUser.NamedUser)
-            or isinstance(assignee, str)
+            assignee is github.GithubObject.NotSet or
+            isinstance(assignee, github.NamedUser.NamedUser) or
+            isinstance(assignee, str)
         ), assignee
         assert mentioned is github.GithubObject.NotSet or isinstance(
             mentioned, github.NamedUser.NamedUser
@@ -2377,9 +2393,9 @@ class Repository(github.GithubObject.CompletableGithubObject):
             since, datetime.datetime
         ), since
         assert (
-            creator is github.GithubObject.NotSet
-            or isinstance(creator, github.NamedUser.NamedUser)
-            or isinstance(creator, str)
+            creator is github.GithubObject.NotSet or
+            isinstance(creator, github.NamedUser.NamedUser) or
+            isinstance(creator, str)
         ), creator
         url_parameters = dict()
         if milestone is not github.GithubObject.NotSet:
@@ -3008,14 +3024,14 @@ class Repository(github.GithubObject.CompletableGithubObject):
         assert isinstance(keyword, str), keyword
         headers, data = self._requester.requestJsonAndCheck(
             "GET",
-            "/legacy/issues/search/"
-            + self.owner.login
-            + "/"
-            + self.name
-            + "/"
-            + state
-            + "/"
-            + urllib.parse.quote(keyword),
+            "/legacy/issues/search/" +
+            self.owner.login +
+            "/" +
+            self.name +
+            "/" +
+            state +
+            "/" +
+            urllib.parse.quote(keyword),
         )
         return [
             github.Issue.Issue(
